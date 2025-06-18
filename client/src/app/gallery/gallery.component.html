@@ -1,0 +1,7 @@
+<div class="gallery">
+    @for (image of images(); track $index) {
+        <div class="image-item" (click)="open($index)">
+          <img [src]="image.src" [alt]="image.thumb">
+        </div>
+    }
+</div>

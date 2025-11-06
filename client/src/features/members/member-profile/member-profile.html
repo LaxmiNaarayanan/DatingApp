@@ -1,4 +1,4 @@
-@if (member(); as member) {
+@if (memberService.member(); as member) {
     <div class="flex flex-col gap-3">
         <div class="flex gap-3">
             <span class="font-semibold">Member since:</span>
@@ -9,6 +9,50 @@
             <span>{{member.lastActive | date: 'dd MMM yyyy h:mm a'}}</span>
         </div>
         <h3 class="text-lg font-semibold text-primary">About {{member.displayName}}</h3>
+        @if (memberService.editMode()) {
+            <form #editForm="ngForm" (ngSubmit)="updateProfile()" class="flex flex-col w-full gap-4">
+                <label class="floating-label">
+                    <span>Display Name</span>
+                    <input
+                        placeholder="Display name" 
+                        name="displayName"
+                        class="input w-full"
+                        [(ngModel)]="editableMember.displayName"  />
+                </label>
+                <label class="floating-label">
+                    <span>Description</span>
+                    <textarea
+                        placeholder="Description" 
+                        name="description"
+                        class="textarea w-full"
+                        [(ngModel)]="editableMember.description"></textarea>
+                </label>
+                <label class="floating-label">
+                    <span>City</span>
+                    <input
+                        placeholder="City" 
+                        name="city"
+                        class="input w-full"
+                        [(ngModel)]="editableMember.city"  />
+                </label>
+                <label class="floating-label">
+                    <span>Country</span>
+                    <input
+                        placeholder="Country" 
+                        name="country"
+                        class="input w-full"
+                        [(ngModel)]="editableMember.country"  />
+                </label>
+                <div class="flex self-end">
+                    <button
+                        [disabled]="editForm.invalid || editForm.pristine"
+                        type="submit" 
+                        class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        }
+        @else {
         <div>{{member.description}}</div>
+        }
     </div>
 }

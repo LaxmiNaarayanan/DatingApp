@@ -8,7 +8,7 @@ const cache = new Map<string, HttpEvent<unknown>>();
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const busyService = inject(BusyService);
   const cacheResponse = cache.get(req.url);
-  if (cacheResponse) {
+  if (cacheResponse && !req.url.includes('account/login')) {
     return of(cacheResponse);
   }
   busyService.busy();

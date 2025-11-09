@@ -56,7 +56,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<Photo>> AddPhoto([FromForm] IFormFile file)
         {
-            var member = await memberRepository.GetMemberByIdAsync(User.GetMemberId());
+            var member = await memberRepository.GetMemberForUpdate(User.GetMemberId());
             if (member == null) return BadRequest("Cannot update member");
             var result = await photoService.UploadPhotoAsync(file);
             if (result.Error != null) return BadRequest(result.Error.Message);

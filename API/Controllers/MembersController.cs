@@ -91,6 +91,7 @@ namespace API.Controllers
             }
 
             member.ImageUrl = photo.Url;
+            // Null Exception
             member.User.ImageUrl = photo.Url;
 
             if (await memberRepository.SaveAllAsync()) return NoContent();

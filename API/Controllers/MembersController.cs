@@ -17,9 +17,10 @@ namespace API.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers(
-            [FromQuery] PagingParams pagingParams)
+            [FromQuery] MembersParams membersParams)
         {
-            return Ok(await memberRepository.GetMembersAsync(pagingParams));
+            membersParams.CurrentMemberId = User.GetMemberId();
+            return Ok(await memberRepository.GetMembersAsync(membersParams));
         }
 
         [HttpGet("{id}")]

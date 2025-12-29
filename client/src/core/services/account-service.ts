@@ -15,36 +15,62 @@ export class AccountService {
   private baseUrl = environment.apiUrl;
 
   register(creds: RegisterCreds) {
-    return this.http.post<User>(this.baseUrl + 'account/register', creds).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/register', creds, {withCredentials: true}).pipe(
       tap((user: User) => {
         if (user) {
           this.setCurrentUser(user);
+          this.startTokenRefreshInterval();
         }
       })
     );
   }
 
   login(creds: any) {
-    return this.http.post<User>(this.baseUrl + 'account/login', creds).pipe(
+    return this.http.post<User>(this.baseUrl + 'account/login', creds, {withCredentials: true}).pipe(
       tap((user: User) => {
         if (user) {
           this.setCurrentUser(user);
+          this.startTokenRefreshInterval();
         }
       })
     );
   }
 
+  refreshToken() {
+    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, {withCredentials: true})
+  }
+
+  startTokenRefreshInterval() {
+    setInterval(() => {
+      this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, {withCredentials: true})
+        .subscribe({
+          next: user => {
+            this.setCurrentUser(user);
+          },
+          error: () => {
+            this.logout();
+          }
+        })
+    }, 5 * 60 * 1000); // every 5 minutes
+  }
+
   setCurrentUser(user: User) {
-    localStorage.setItem('user', JSON.stringify(user));
+    user.roles = this.getRoleFromToken(user);
     this.currentUser.set(user);
     this.likesService.getLikeIds();
   }
 
 
   logout() {
-    localStorage.removeItem('user');
     localStorage.removeItem('filters');
     this.likesService.clearLikeIds();
     this.currentUser.set(null);
+  }
+
+  private getRoleFromToken(user: User): string[] {
+    const payload = user.token.split('.')[1];
+    const decodedPayload = atob(payload);
+    const jsonPayload = JSON.parse(decodedPayload);
+    return Array.isArray(jsonPayload['role']) ? jsonPayload['role'] : [jsonPayload['role']];
   }
 }

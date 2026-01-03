@@ -25,9 +25,10 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const cacheKey = generateCacheKey(req.url, req.params);
 
   const method = req.method.toUpperCase();
-  if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
+  if (method === 'POST') {
     if (req.url.includes('/likes')) invalidateCache('/likes');
     if (req.url.includes('/messages')) invalidateCache('/messages');
+    if (req.url.includes('/logout')) cache.clear();
   }
 
   if(req.method === 'GET') {
